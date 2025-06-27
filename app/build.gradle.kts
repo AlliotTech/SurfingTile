@@ -26,9 +26,9 @@ android {
         }
         debug {
             // 启用调试信息
-            debuggable = true
+            isDebuggable = true
             // 启用代码覆盖率
-            testCoverageEnabled = true
+            isTestCoverageEnabled = true
         }
     }
     
