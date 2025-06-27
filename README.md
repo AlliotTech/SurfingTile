@@ -207,4 +207,36 @@ adb logcat | grep SurfingTileService
 - ✅ 添加单元测试和代码覆盖率
 - ✅ 优化性能和资源管理
 - ✅ 改进日志记录和调试信息
-- ✅ 更新模块路径为box4 
+- ✅ 更新模块路径为box4
+
+## 自动发布
+
+本项目使用GitHub Actions进行自动构建和发布。
+
+### 发布新版本
+
+1. 更新版本号（在 `app/build.gradle.kts` 中）
+2. 提交代码并推送
+3. 创建并推送版本标签：
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+4. GitHub Actions会自动：
+   - 编译APK文件
+   - 创建GitHub Release
+   - 上传APK供下载
+
+### 手动触发构建
+
+你也可以在GitHub仓库的Actions页面手动触发构建。
+
+## 本地构建
+
+```bash
+./gradlew assembleRelease
+```
+
+构建产物位于：`app/build/outputs/apk/release/app-release.apk` 

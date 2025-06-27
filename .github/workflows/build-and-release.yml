@@ -1,0 +1,50 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'  # 当推送以v开头的标签时触发
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+        
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: Build APK
+      run: ./gradlew assembleRelease
+      
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        draft: false
+        prerelease: false
+        files: app/build/outputs/apk/release/app-release.apk
+        body: |
+          ## SurfingTile ${{ github.ref_name }}
+          
+          ### 下载
+          - **APK**: 适用于直接安装到Android设备
+          
+          ### 安装说明
+          1. 下载APK文件
+          2. 在Android设备上启用"未知来源"应用安装
+          3. 安装APK文件
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
