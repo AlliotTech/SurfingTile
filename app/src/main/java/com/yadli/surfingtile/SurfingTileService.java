@@ -1,6 +1,8 @@
 package com.yadli.surfingtile;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.util.Log;
@@ -17,6 +19,9 @@ public class SurfingTileService extends TileService {
     // 使用单线程执行器避免并发问题
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile boolean isProcessing = false;
+    
+    // 用于在主线程中显示Toast的Handler
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onStartListening() {
@@ -195,8 +200,8 @@ public class SurfingTileService extends TileService {
      */
     private void showToast(String message) {
         try {
-            // 在主线程中显示Toast
-            runOnUiThread(() -> {
+            // 使用Handler在主线程中显示Toast
+            mainHandler.post(() -> {
                 Toast.makeText(this, "SurfingTile: " + message, Toast.LENGTH_SHORT).show();
             });
         } catch (Exception e) {
