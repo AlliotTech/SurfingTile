@@ -26,6 +26,7 @@ public class SurfingTileService extends TileService {
     @Override
     public void onStartListening() {
         super.onStartListening();
+        Log.i(TAG, "=== onStartListening called ===");
         showToast("Tile开始监听");
         updateTileStateAsync();
     }
@@ -33,6 +34,8 @@ public class SurfingTileService extends TileService {
     @Override
     public void onClick() {
         super.onClick();
+        Log.i(TAG, "=== onClick called ===");
+        showToast("点击事件触发");
         
         // 防止重复点击
         if (isProcessing) {
@@ -57,6 +60,7 @@ public class SurfingTileService extends TileService {
 
     private void handleTileClick() {
         try {
+            Log.i(TAG, "=== handleTileClick started ===");
             showToast("检查当前状态...");
             int currentState = getBoxState();
             int newState = determineNewState(currentState);
@@ -82,6 +86,7 @@ public class SurfingTileService extends TileService {
     }
 
     private int determineNewState(int currentState) {
+        Log.i(TAG, "Current state: " + currentState);
         switch(currentState) {
             case Tile.STATE_ACTIVE:
                 showToast("当前状态: 运行中 → 停止");
@@ -103,6 +108,7 @@ public class SurfingTileService extends TileService {
     private void updateTileStateAsync() {
         CompletableFuture.runAsync(() -> {
             try {
+                Log.i(TAG, "=== updateTileStateAsync started ===");
                 showToast("更新磁贴状态...");
                 int state = getBoxState();
                 updateTileUI(state);
@@ -116,10 +122,14 @@ public class SurfingTileService extends TileService {
     }
 
     private void updateTileUI(int state) {
+        Log.i(TAG, "Updating tile UI to state: " + state);
         Tile tile = getQsTile();
         if (tile != null) {
             tile.setState(state);
             tile.updateTile();
+            Log.i(TAG, "Tile UI updated successfully");
+        } else {
+            Log.e(TAG, "getQsTile() returned null");
         }
     }
 
@@ -135,6 +145,7 @@ public class SurfingTileService extends TileService {
 
     private int getBoxState() {
         try {
+            Log.i(TAG, "=== getBoxState started ===");
             showToast("检查服务状态...");
             // 使用工具类执行curl命令
             ProcessUtils.ProcessResult result = ProcessUtils.executeCommand(
@@ -164,11 +175,13 @@ public class SurfingTileService extends TileService {
 
     private boolean setBoxState(int state) {
         try {
+            Log.i(TAG, "=== setBoxState started, target state: " + state + " ===");
             boolean isEnableOperation = (state == Tile.STATE_ACTIVE);
             String fileCommand = Config.buildFileCommand(isEnableOperation);
             String[] suCommand = Config.buildSuCommand(fileCommand);
             
             showToast("执行命令: " + fileCommand);
+            Log.i(TAG, "Executing command: " + fileCommand);
             
             // 使用工具类执行su命令
             ProcessUtils.ProcessResult result = ProcessUtils.executeCommand(
@@ -182,8 +195,10 @@ public class SurfingTileService extends TileService {
             boolean success = ProcessUtils.isFileOperationSuccess(result.exitCode, isEnableOperation);
             if (success) {
                 showToast("文件操作成功");
+                Log.i(TAG, "File operation successful");
             } else {
                 showToast("文件操作失败");
+                Log.e(TAG, "File operation failed");
             }
             
             return success;
@@ -200,6 +215,7 @@ public class SurfingTileService extends TileService {
      */
     private void showToast(String message) {
         try {
+            Log.d(TAG, "Showing toast: " + message);
             // 使用Handler在主线程中显示Toast
             mainHandler.post(() -> {
                 Toast.makeText(this, "SurfingTile: " + message, Toast.LENGTH_SHORT).show();
@@ -212,13 +228,14 @@ public class SurfingTileService extends TileService {
     @Override
     public void onTileAdded() {
         super.onTileAdded();
-        Log.i(TAG, "Surfing tile added to quick settings");
+        Log.i(TAG, "=== Surfing tile added to quick settings ===");
         showToast("Surfing磁贴已添加到快速设置");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "=== Tile service destroyed ===");
         showToast("Tile服务已销毁");
         // 清理资源
         if (!executor.isShutdown()) {

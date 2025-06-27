@@ -13,7 +13,7 @@ public final class Config {
     // 超时配置（毫秒）
     public static final int CONNECT_TIMEOUT_MS = 1000;
     public static final int READ_TIMEOUT_MS = 1000;
-    public static final int COMMAND_TIMEOUT_MS = 3000;
+    public static final int COMMAND_TIMEOUT_MS = 5000;
     public static final int EXECUTOR_SHUTDOWN_TIMEOUT_MS = 1000;
     
     // 日志标签

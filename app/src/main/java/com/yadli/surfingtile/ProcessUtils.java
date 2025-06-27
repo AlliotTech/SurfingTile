@@ -150,12 +150,17 @@ public final class ProcessUtils {
      * 检查文件操作是否成功
      */
     public static boolean isFileOperationSuccess(int exitCode, boolean isEnableOperation) {
-        // 对于启用操作，exit code 0 表示成功
-        // 对于禁用操作，exit code 1 可能是正常的（文件已存在）
+        Log.d(TAG, "Checking file operation success: exitCode=" + exitCode + ", isEnable=" + isEnableOperation);
+        
         if (isEnableOperation) {
-            return exitCode == 0;
-        } else {
+            // 启用操作：删除disable文件
+            // exitCode 0: 文件存在且删除成功
+            // exitCode 1: 文件不存在（也是成功，因为目标就是让文件不存在）
             return exitCode == 0 || exitCode == 1;
+        } else {
+            // 禁用操作：创建disable文件
+            // exitCode 0: 创建成功
+            return exitCode == 0;
         }
     }
 } 
